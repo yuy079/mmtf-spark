@@ -9,6 +9,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.ml.feature.Word2VecModel;
+import org.apache.spark.ml.feature.Word2VecModel.Word2VecModelReader;
+import org.apache.spark.ml.feature.Word2VecModel.Word2VecModelWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.biojava.nbio.structure.StructureException;
@@ -81,7 +84,8 @@ public class SecondaryStructureWord2VecEncoder {
 		int windowSize = (segmentLength-1)/2;
 		int vectorSize = 50;
 		data = encoder.overlappingNgramWord2VecEncode(n, windowSize, vectorSize);	
-		
+		Word2VecModel model = encoder.getWord2VecModel();
+		model.save("D://w2vModel");
 		data.printSchema();
 		data.show(25, false);
 		

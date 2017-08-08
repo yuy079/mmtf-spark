@@ -22,7 +22,7 @@ public class UniProtDemo {
 	    JavaSparkContext sc = new JavaSparkContext(conf);
 	    Dataset<Row> ds = Uniprot.getDataset(sc, UniDataset.UNIREF100);
 	    // show the schema of this dataset
-	    ds.printSchema();
+//	    ds.printSchema();
 	    ds.show(20, false);
 	    ds.write().mode("overwrite").format(args[1]).save(args[0]);
 	    
