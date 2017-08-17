@@ -61,7 +61,7 @@ public class SecondaryStructureOneHotEncoder {
 		// of L-protein chains
 		int sequenceIdentity = 20;
 		double resolution = 2.0;
-		double fraction = 0.1;
+		double fraction = 1.0;
 		long seed = 123;
 		
 		JavaPairRDD<String, StructureDataInterface> pdb = MmtfReader
@@ -69,7 +69,7 @@ public class SecondaryStructureOneHotEncoder {
 				.flatMapToPair(new StructureToPolymerChains())
 				.filter(new Pisces(sequenceIdentity, resolution)) // The pisces filter
 				.filter(new ContainsLProteinChain()) // filter out for example D-proteins
-                .sample(false, fraction, seed);
+                .sample(false,  fraction, seed);
 		
 		// get content
 		int segmentLength = 11;

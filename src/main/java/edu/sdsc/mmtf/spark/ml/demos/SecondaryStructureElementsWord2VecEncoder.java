@@ -15,6 +15,7 @@ import edu.sdsc.mmtf.spark.filters.ContainsLProteinChain;
 import edu.sdsc.mmtf.spark.io.MmtfReader;
 import edu.sdsc.mmtf.spark.mappers.StructureToPolymerChains;
 import edu.sdsc.mmtf.spark.ml.ProteinSequenceEncoder;
+import edu.sdsc.mmtf.spark.rcsbfilters.Pisces;
 
 /**
  * 
@@ -41,27 +42,26 @@ public class SecondaryStructureElementsWord2VecEncoder {
 				.setAppName(SecondaryStructureWord2VecEncoder.class.getSimpleName());
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		
+		int sequenceIdentity = 20;
+		double resolution = 2.0;
 		double fraction = 1.0;
 		long seed = 123;
 		
 		JavaPairRDD<String, StructureDataInterface> pdb = MmtfReader
 				.readSequenceFile(path, sc)
-				.flatMapToPair(new StructureToPolymerChains(false,true))
+				.flatMapToPair(new StructureToPolymerChains())
+				.filter(new Pisces(sequenceIdentity, resolution)) // The pisces filter
 				.filter(new ContainsLProteinChain()) // filter out for example D-proteins
-                .sample(false, fraction, seed);
+                .sample(false,  fraction, seed);
 			
-		Dataset<Row> data = SecondaryStructureElementExtractor.getDataset(pdb, "H");
+		Dataset<Row> data = SecondaryStructureElementExtractor.getDataset(pdb, "E");
 		System.out.println(data.count());
 		data.show(10,false);
 		
-		int segmentLength = 11;
-		
+
 		// add Word2Vec encoded feature vector
 		ProteinSequenceEncoder encoder = new ProteinSequenceEncoder(data);
-		int n = 2;
-		int windowSize = (segmentLength-1)/2;
-		int vectorSize = 50;
-		data = encoder.overlappingNgramWord2VecEncode(n, windowSize, vectorSize);	
+		data = encoder.oneHotEncode();
 		
 		if (args[1].equals("json")) {
 			// coalesce data into a single file

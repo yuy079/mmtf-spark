@@ -64,7 +64,7 @@ public class SecondaryStructureWord2VecEncoder {
 		// of L-protein chains
 		int sequenceIdentity = 20;
 		double resolution = 2.0;
-		double fraction = 0.1;
+		double fraction = 1.0;
 		long seed = 123;
 		
 		JavaPairRDD<String, StructureDataInterface> pdb = MmtfReader
@@ -80,9 +80,9 @@ public class SecondaryStructureWord2VecEncoder {
 	
 		// add Word2Vec encoded feature vector
 		ProteinSequenceEncoder encoder = new ProteinSequenceEncoder(data);
-		int n = 2;
+		int n = 3;
 		int windowSize = (segmentLength-1)/2;
-		int vectorSize = 50;
+		int vectorSize = 100;
 		data = encoder.overlappingNgramWord2VecEncode(n, windowSize, vectorSize);	
 		Word2VecModel model = encoder.getWord2VecModel();
 		model.save("D://w2vModel");

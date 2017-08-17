@@ -1,5 +1,7 @@
 package edu.sdsc.mmtf.spark.analysis;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +21,7 @@ import edu.sdsc.mmtf.spark.utils.DsspSecondaryStructure;
  * @author Peter Rose
  */
 public class TraverseStructureHierarchy {
-
+	static PrintWriter w;
 	public static void main(String args[]) {
 
 		// instantiate Spark. Each Spark application needs these two lines of code.
@@ -42,7 +44,9 @@ public class TraverseStructureHierarchy {
 	 * 
 	 * @param structure structure to be traversed
 	 */
-	public static void demo(StructureDataInterface structure) {
+	public static void demo(StructureDataInterface structure) throws FileNotFoundException {
+		w = new PrintWriter( new PrintWriter("D://Hello3.txt"), true);
+		
 		printMmtfInfo(structure);
 		printMetadata(structure);
 		printCrystallographicData(structure);
@@ -62,10 +66,10 @@ public class TraverseStructureHierarchy {
 	 * @param structure structure to be traversed
 	 */
 	private static void printMmtfInfo(StructureDataInterface structure) {
-		System.out.println("*** MMMTF INFO ***");
-		System.out.println("MmtfProducer    : " + structure.getMmtfProducer());
-		System.out.println("MmtfVersion     : " + structure.getMmtfVersion());
-		System.out.println();
+		w.println("*** MMMTF INFO ***");
+		w.println("MmtfProducer    : " + structure.getMmtfProducer());
+		w.println("MmtfVersion     : " + structure.getMmtfVersion());
+		w.println();
 	}
 
 	/**
@@ -74,16 +78,16 @@ public class TraverseStructureHierarchy {
 	 * @param structure structure to be traversed
 	 */
 	private static void printMetadata(StructureDataInterface structure) {
-		System.out.println("*** METADATA ***");
-		System.out.println("StructureId           : " + structure.getStructureId());
-		System.out.println("Title                 : " + structure.getTitle());
-		System.out.println("Deposition date       : " + structure.getDepositionDate());
-		System.out.println("Release date          : " + structure.getReleaseDate()); // note, this is currently the last update date
-		System.out.println("Experimental method(s): " + Arrays.toString(structure.getExperimentalMethods()));
-		System.out.println("Resolution            : " + structure.getResolution());
-		System.out.println("Rfree                 : " + structure.getRfree());
-		System.out.println("Rwork                 : " + structure.getRwork());
-		System.out.println();
+		w.println("*** METADATA ***");
+		w.println("StructureId           : " + structure.getStructureId());
+		w.println("Title                 : " + structure.getTitle());
+		w.println("Deposition date       : " + structure.getDepositionDate());
+		w.println("Release date          : " + structure.getReleaseDate()); // note, this is currently the last update date
+		w.println("Experimental method(s): " + Arrays.toString(structure.getExperimentalMethods()));
+		w.println("Resolution            : " + structure.getResolution());
+		w.println("Rfree                 : " + structure.getRfree());
+		w.println("Rwork                 : " + structure.getRwork());
+		w.println();
 	}
 
 	/**
@@ -92,24 +96,24 @@ public class TraverseStructureHierarchy {
 	 * @param structure structure to be traversed
 	 */
 	private static void printCrystallographicData(StructureDataInterface structure) {
-		System.out.println("*** CRYSTALLOGRAPHIC DATA ***");
-		System.out.println("Space group           : " + structure.getSpaceGroup());
-		System.out.println("Unit cell dimensions  : " + Arrays.toString(structure.getUnitCell()));	
-		System.out.println();
+		w.println("*** CRYSTALLOGRAPHIC DATA ***");
+		w.println("Space group           : " + structure.getSpaceGroup());
+		w.println("Unit cell dimensions  : " + Arrays.toString(structure.getUnitCell()));	
+		w.println();
 	}
 
 	public static void printBioAssemblyData(StructureDataInterface structure) {
-		System.out.println("*** BIOASSEMBLY DATA ***");
-		System.out.println("Number bioassemblies: " + structure.getNumBioassemblies());
+		w.println("*** BIOASSEMBLY DATA ***");
+		w.println("Number bioassemblies: " + structure.getNumBioassemblies());
 		
 		for (int i = 0; i < structure.getNumBioassemblies(); i++) {
-			System.out.println("bioassembly: " + structure.getBioassemblyName(i));
+			w.println("bioassembly: " + structure.getBioassemblyName(i));
 			int numTransformations = structure.getNumTransInBioassembly(i);
-			System.out.println("  Number transformations: " + numTransformations);
+			w.println("  Number transformations: " + numTransformations);
 			for (int j = 0; j < numTransformations; j++) {
-				System.out.println("    transformation: " + j);
-				System.out.println("    chains:         " + Arrays.toString(structure.getChainIndexListForTransform(i, j)));
-				System.out.println("    rotTransMatrix: " + Arrays.toString(structure.getMatrixForTransform(i, j)));
+				w.println("    transformation: " + j);
+				w.println("    chains:         " + Arrays.toString(structure.getChainIndexListForTransform(i, j)));
+				w.println("    rotTransMatrix: " + Arrays.toString(structure.getMatrixForTransform(i, j)));
 			}
 		}
 	}
@@ -121,11 +125,11 @@ public class TraverseStructureHierarchy {
 	 */
 	public static void traverse(StructureDataInterface structure) {
 
-		System.out.println("*** STRUCTURE DATA ***");
-		System.out.println("Number of models: " + structure.getNumModels());
-		System.out.println("Number of chains: " + structure.getNumChains());
-		System.out.println("Number of groups: " + structure.getNumGroups());
-		System.out.println("Number of atoms : " + structure.getNumAtoms());
+		w.println("*** STRUCTURE DATA ***");
+		w.println("Number of models: " + structure.getNumModels());
+		w.println("Number of chains: " + structure.getNumChains());
+		w.println("Number of groups: " + structure.getNumGroups());
+		w.println("Number of atoms : " + structure.getNumAtoms());
 
 		// Global indices that point into the flat (columnar) data structure
 		// e.g., all x-coordinates are in a single float[] and are indexed by
@@ -157,10 +161,10 @@ public class TraverseStructureHierarchy {
 			}
 		}
 
-		System.out.println("chainIndex: " + chainIndex);
-		System.out.println("groupIndex: " + groupIndex);
-		System.out.println("atomIndex : " + atomIndex);
-		System.out.println();
+		w.println("chainIndex: " + chainIndex);
+		w.println("groupIndex: " + groupIndex);
+		w.println("atomIndex : " + atomIndex);
+		w.println();
 	}
 
 	/**
@@ -171,14 +175,14 @@ public class TraverseStructureHierarchy {
 	 */
 	public static void printChainInfo(StructureDataInterface structure) {
 
-		System.out.println("*** CHAIN DATA ***");
-		System.out.println("Number of chains: " + structure.getNumChains());
+		w.println("*** CHAIN DATA ***");
+		w.println("Number of chains: " + structure.getNumChains());
 
 		int chainIndex = 0;
 
 		// Loop over models
 		for (int i = 0; i < structure.getNumModels(); i++) {
-			System.out.println("model: " + (i+1)); // models are 1-based
+			w.println("model: " + (i+1)); // models are 1-based
 
 			// Loop over chains in a model
 			for (int j = 0; j < structure.getChainsPerModel()[i]; j++) {
@@ -187,12 +191,12 @@ public class TraverseStructureHierarchy {
 				String chainName = structure.getChainNames()[chainIndex]; // chain name used in pdb files
 				String chainId = structure.getChainIds()[chainIndex]; // called asym_id in mmCIF
 				int groups = structure.getGroupsPerChain()[chainIndex];
-				System.out.println("chainName: " + chainName + ", chainId: " + chainId + ", groups: " + groups);
+				w.println("chainName: " + chainName + ", chainId: " + chainId + ", groups: " + groups);
 
 				chainIndex++;
 			}
 		}
-		System.out.println();
+		w.println();
 	}
 
 	/**
@@ -202,7 +206,7 @@ public class TraverseStructureHierarchy {
 	 * @param structure structure to be traversed
 	 */
 	public static void printChainGroupInfo(StructureDataInterface structure) {
-		System.out.println("*** CHAIN AND GROUP DATA ***");
+		w.println("*** CHAIN AND GROUP DATA ***");
 
 		// Global indices that point into the flat (columnar) data structure
 		int chainIndex = 0;
@@ -210,7 +214,7 @@ public class TraverseStructureHierarchy {
 
 		// Loop over models
 		for (int i = 0; i < structure.getNumModels(); i++) {
-			System.out.println("model: " + (i+1));
+			w.println("model: " + (i+1));
 
 			// Loop over chains in a model
 			for (int j = 0; j < structure.getChainsPerModel()[i]; j++) {
@@ -219,7 +223,7 @@ public class TraverseStructureHierarchy {
 				String chainName = structure.getChainNames()[chainIndex]; // this is the chain name used in pdb files
 				String chainId = structure.getChainIds()[chainIndex]; // this is also called asym_id in mmCIF			
 				int groups = structure.getGroupsPerChain()[chainIndex];
-				System.out.println("chainName: " + chainName + ", chainId: " + chainId + ", groups: " + groups);
+				w.println("chainName: " + chainName + ", chainId: " + chainId + ", groups: " + groups);
 
 				// Loop over groups in a chain
 				for (int k = 0; k < structure.getGroupsPerChain()[chainIndex]; k++) {
@@ -241,23 +245,23 @@ public class TraverseStructureHierarchy {
 					int numAtoms = structure.getNumAtomsInGroup(groupType);
 					int numBonds = structure.getGroupBondOrders(groupType).length;
 
-					System.out.println("   groupName      : " + groupName);
-					System.out.println("   oneLetterCode  : " + oneLetterCode);
-					System.out.println("   seq. index     : " + seqIndex); // index into complete polymer sequence ("SEQRES")
-					System.out.println("   numAtoms       : " + numAtoms);
-					System.out.println("   numBonds       : " + numBonds);
-					System.out.println("   chemCompType   : " + chemCompType);
-					System.out.println("   groupId        : " + groupId);
-					System.out.println("   insertionCode  : " + insertionCode);
-					System.out.println("   DSSP secStruct.: " + DsspSecondaryStructure.getDsspCode(secStruct).getOneLetterCode());
-					System.out.println();
+					w.println("   groupName      : " + groupName);
+					w.println("   oneLetterCode  : " + oneLetterCode);
+					w.println("   seq. index     : " + seqIndex); // index into complete polymer sequence ("SEQRES")
+					w.println("   numAtoms       : " + numAtoms);
+					w.println("   numBonds       : " + numBonds);
+					w.println("   chemCompType   : " + chemCompType);
+					w.println("   groupId        : " + groupId);
+					w.println("   insertionCode  : " + insertionCode);
+					w.println("   DSSP secStruct.: " + DsspSecondaryStructure.getDsspCode(secStruct).getOneLetterCode());
+					w.println();
 
 					groupIndex++; // update global group index
 				}
 				chainIndex++;
 			}
 		}
-		System.out.println();
+		w.println();
 	}
 
 	/**
@@ -267,7 +271,7 @@ public class TraverseStructureHierarchy {
 	 * @param structure structure to be traversed
 	 */
 	public static void printChainEntityGroupAtomInfo(StructureDataInterface structure) {
-		System.out.println("*** CHAIN ENTITY GROUP ATOM DATA ***");
+		w.println("*** CHAIN ENTITY GROUP ATOM DATA ***");
 
 		// create an index that maps a chain to its entity
 		int[] chainToEntityIndex = getChainToEntityIndex(structure);
@@ -279,7 +283,7 @@ public class TraverseStructureHierarchy {
 
 		// Loop over models
 		for (int i = 0; i < structure.getNumModels(); i++) {
-			System.out.println("model: " + (i+1));
+			w.println("model: " + (i+1));
 
 			// Loop over chains in a model
 			for (int j = 0; j < structure.getChainsPerModel()[i]; j++) {
@@ -288,15 +292,15 @@ public class TraverseStructureHierarchy {
 				String chainName = structure.getChainNames()[chainIndex]; // this is the chain name used in pdb files
 				String chainId = structure.getChainIds()[chainIndex]; // this is also called asym_id in mmCIF		
 				int groups = structure.getGroupsPerChain()[chainIndex];
-				System.out.println("chainName: " + chainName + ", chainId: " + chainId + ", groups: " + groups);
+				w.println("chainName: " + chainName + ", chainId: " + chainId + ", groups: " + groups);
 
 				// Print entity info
 				String entityType = structure.getEntityType(chainToEntityIndex[chainIndex]);		
 				String entityDescription = structure.getEntityDescription(chainToEntityIndex[chainIndex]);
 				String entitySequence = structure.getEntitySequence(chainToEntityIndex[chainIndex]); 
-				System.out.println("entity type          : " + entityType);
-				System.out.println("entity description   : " + entityDescription);
-				System.out.println("entity sequence      : " + entitySequence);
+				w.println("entity type          : " + entityType);
+				w.println("entity description   : " + entityDescription);
+				w.println("entity sequence      : " + entitySequence);
 
 				// Loop over groups in a chain
 				for (int k = 0; k < structure.getGroupsPerChain()[chainIndex]; k++) {
@@ -318,16 +322,16 @@ public class TraverseStructureHierarchy {
 					int numAtoms = structure.getNumAtomsInGroup(groupType);
 					int numBonds = structure.getGroupBondOrders(groupType).length;
 
-					System.out.println("   groupName      : " + groupName);
-					System.out.println("   oneLetterCode  : " + oneLetterCode);
-					System.out.println("   seq. index     : " + seqIndex); // index into complete polymer sequence ("SEQRES")
-					System.out.println("   numAtoms       : " + numAtoms);
-					System.out.println("   numBonds       : " + numBonds);
-					System.out.println("   chemCompType   : " + chemCompType);
-					System.out.println("   groupId        : " + groupId);
-					System.out.println("   insertionCode  : " + insertionCode);
-					System.out.println("   DSSP secStruct.: " + DsspSecondaryStructure.getDsspCode(secStruct).getOneLetterCode());
-					System.out.println("   Atoms          : ");
+					w.println("   groupName      : " + groupName);
+					w.println("   oneLetterCode  : " + oneLetterCode);
+					w.println("   seq. index     : " + seqIndex); // index into complete polymer sequence ("SEQRES")
+					w.println("   numAtoms       : " + numAtoms);
+					w.println("   numBonds       : " + numBonds);
+					w.println("   chemCompType   : " + chemCompType);
+					w.println("   groupId        : " + groupId);
+					w.println("   insertionCode  : " + insertionCode);
+					w.println("   DSSP secStruct.: " + DsspSecondaryStructure.getDsspCode(secStruct).getOneLetterCode());
+					w.println("   Atoms          : ");
 
 					// Loop over atoms in a group retrieved from the dictionary
 					for (int m = 0; m < structure.getNumAtomsInGroup(groupType); m++) {
@@ -345,7 +349,7 @@ public class TraverseStructureHierarchy {
 						String atomName = structure.getGroupAtomNames(groupType)[m];
 						String element = structure.getGroupElementNames(groupType)[m];
 
-						System.out.println("      " + atomId + "\t" + atomName + "\t" + altLocId + "\t" + x + "\t" + y 
+						w.println("      " + atomId + "\t" + atomName + "\t" + altLocId + "\t" + x + "\t" + y 
 								+ "\t" + z + "\t" + occupancy + "\t" + bFactor + "\t" + element);
 
 						atomIndex++; // update global atom index
@@ -355,7 +359,7 @@ public class TraverseStructureHierarchy {
 				chainIndex++;
 			}
 		}
-		System.out.println();
+		w.println();
 	}
 
 	/**
