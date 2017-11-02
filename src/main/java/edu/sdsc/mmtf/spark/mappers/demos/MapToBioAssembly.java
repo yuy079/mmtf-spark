@@ -30,14 +30,20 @@ public class MapToBioAssembly {
 		}
 	    SparkConf conf = new SparkConf().setMaster("local[*]").setAppName(CustomReportDemo.class.getSimpleName());
 	    JavaSparkContext sc = new JavaSparkContext(conf);
-	    List<String> pdbIds = Arrays.asList("1HV4"); // single protein chain
+	    List<String> pdbIds = Arrays.asList("1BUH"); // single protein chain
 	    JavaPairRDD<String, StructureDataInterface> pdb = MmtfReader.downloadMmtfFiles(pdbIds, sc).cache(); 
-	   
+	    MmtfWriter.writeMmtfFiles("D:", sc, pdb);
 	    pdb = pdb // read MMTF hadoop sequence file
 	    		.flatMapToPair(new StructureToBioassembly());
 	    long count = pdb // read MMTF hadoop sequence file
 	    		.count();
 	    pdb = pdb.coalesce(1);
+	   
+	    pdb.foreach(t-> (){
+	    	(t._2.getxCoords();
+	    	});
+	    
+	    
 	    System.out.println("# structures: " + count);
 	    MmtfWriter.writeMmtfFiles(args[0], sc, pdb);
 	    

@@ -60,7 +60,8 @@ public class MmtfWriter {
         	    path = path + "/";
         }
         final String fullPath = path;
-          
+//        structure
+//        		.foreach(t -> System.out.println(t._2.getGroupAtomNames(0)));
         structure
 				.mapToPair(t -> new Tuple2<String,byte[]>(t._1, toByteArray(t._2, true)))
 		        .foreach(t -> FileUtils.writeByteArrayToFile(new File(fullPath+t._1+".mmtf.gz"), t._2));

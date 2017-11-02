@@ -145,7 +145,6 @@ public class StructureToBioassembly implements PairFlatMapFunction<Tuple2<String
 						for(int jj = 0; jj < structure.getGroupsPerChain()[chainIndex]; jj++)
 						{
 							int currgroup = structure.getGroupTypeIndices()[groupIndex];
-							
 							if(addThisChain)
 							{					
 								bioAssembly.setGroupInfo(structure.getGroupName(currgroup), structure.getGroupIds()[groupIndex], 
